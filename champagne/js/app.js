@@ -45,13 +45,7 @@ async function send() {
         console.log(responseText);
 
         button.innerText = "送信完了！";
-        result.innerHTML = "✅ 送信完了！<br>2秒後に閉じます。";
-
-        setTimeout(function () {
-            if (typeof liff !== "undefined" && liff.isInClient()) {
-                liff.closeWindow();
-            }
-        }, 2000);
+        result.innerHTML = "✅ 送信完了！";
 
     } catch (error) {
         console.error(error);
