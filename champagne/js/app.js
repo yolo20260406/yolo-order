@@ -1,3 +1,4 @@
+const liffId = "2010495117-Yc1KZJ4o";
 const gasUrl = "https://script.google.com/macros/s/AKfycbyiMoulKLMG9MTisDZC8jdfQ6KeQwS6ia7R80YZxMHrXoSLC_-zrmL5urpkeWchoezF/exec";
 
 document
@@ -8,7 +9,16 @@ document
     .getElementById("sendBtn")
     .addEventListener("click", send);
 
+async function initLiff() {
+    if (typeof liff !== "undefined") {
+        await liff.init({ liffId: liffId });
+    }
+}
+
+initLiff();
+
 async function send() {
+    alert("send");
     const button = document.getElementById("sendBtn");
     const result = document.getElementById("result");
     const text = document.getElementById("txt").value;
