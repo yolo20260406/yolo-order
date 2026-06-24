@@ -1,59 +1,31 @@
 <!DOCTYPE html>
 <html lang="ja">
 
-<head>
-    <meta charset="UTF-8">
-    <title>LIFFテスト</title>
+    <head>
+        <meta charset="UTF-8">
+        <title>LIFFテスト</title>
 
-    <style>
-        body {
-            font-family: sans-serif;
-            padding: 30px;
-            background: #f5f5f5;
-        }
+        <link rel="stylesheet" href="./css/style.css">
+    </head>
 
-        .card {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-        }
-
-        input {
-            width: 100%;
-            padding: 12px;
-            box-sizing: border-box;
-            margin-top: 10px;
-        }
-
-        button {
-            width: 100%;
-            margin-top: 15px;
-            padding: 12px;
-            background: #06C755;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-
-        #result {
-            margin-top: 20px;
-        }
-    </style>
-
-</head>
-
-<body>
+    <body>
 
     <div class="card">
 
         <h2>YOLO LIFFテスト</h2>
 
-        <input
-            id="txt"
-            placeholder="好きな文字を入力">
+        <input id="txt" placeholder="好きな文字を入力">
 
-        <button onclick="send()">
+        <input
+                id="image"
+                type="file"
+                accept="image/*">
+
+        <br><br>
+
+        <img id="preview">
+
+        <button id="sendBtn">
             送信
         </button>
 
@@ -61,22 +33,7 @@
 
     </div>
 
+    <script src="./js/app.js"></script>
 
-    <script>
-
-        function send() {
-
-            const text =
-                document.getElementById("txt").value;
-
-            document.getElementById("result")
-                .innerHTML =
-                "入力内容：" + text;
-
-        }
-
-    </script>
-
-</body>
-
+    </body>
 </html>
