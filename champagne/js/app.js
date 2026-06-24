@@ -23,12 +23,16 @@ async function send() {
     result.innerHTML = "少々お待ちください";
 
     try {
-        await fetch(gasUrl, {
+        const response = await fetch(gasUrl, {
             method: "POST",
             body: JSON.stringify({
                 message: text
             })
         });
+
+        const responseText = await response.text();
+
+        console.log(responseText);
 
         button.innerText = "送信完了！";
         result.innerHTML = "✅ 送信完了！<br>2秒後に閉じます。";
@@ -40,10 +44,11 @@ async function send() {
         }, 2000);
 
     } catch (error) {
+        console.error(error);
+
         button.disabled = false;
         button.innerText = "送信";
-        result.innerHTML = "";
-        alert("送信に失敗しました。もう一度お試しください。");
+        result.innerHTML = "送信失敗：" + error.message;
     }
 }
 
