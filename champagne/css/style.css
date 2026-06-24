@@ -41,3 +41,12 @@ button{
     border-radius:10px;
     border:1px solid #ddd;
 }
+
+button:disabled {
+    background: #999;
+    cursor: not-allowed;
+}
+
+button:active {
+    transform: scale(0.98);
+}

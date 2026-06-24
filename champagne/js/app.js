@@ -9,25 +9,42 @@ document
     .addEventListener("click", send);
 
 async function send() {
-    const text = document
-        .getElementById("txt")
-        .value;
+    const button = document.getElementById("sendBtn");
+    const result = document.getElementById("result");
+    const text = document.getElementById("txt").value;
 
     if (!text) {
         alert("入力してください");
         return;
     }
 
-    await fetch(gasUrl, {
-        method: "POST",
-        body: JSON.stringify({
-            message: text
-        })
-    });
+    button.disabled = true;
+    button.innerText = "送信中...";
+    result.innerHTML = "少々お待ちください";
 
-    document
-        .getElementById("result")
-        .innerHTML = "保存しました：" + text;
+    try {
+        await fetch(gasUrl, {
+            method: "POST",
+            body: JSON.stringify({
+                message: text
+            })
+        });
+
+        button.innerText = "送信完了！";
+        result.innerHTML = "✅ 送信完了！<br>2秒後に閉じます。";
+
+        setTimeout(function () {
+            if (typeof liff !== "undefined" && liff.isInClient()) {
+                liff.closeWindow();
+            }
+        }, 2000);
+
+    } catch (error) {
+        button.disabled = false;
+        button.innerText = "送信";
+        result.innerHTML = "";
+        alert("送信に失敗しました。もう一度お試しください。");
+    }
 }
 
 function previewImage() {
