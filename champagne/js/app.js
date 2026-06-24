@@ -1,3 +1,5 @@
+const gasUrl = "https://script.google.com/macros/s/AKfycbyiMoulKLMG9MTisDZC8jdfQ6KeQwS6ia7R80YZxMHrXoSLC_-zrmL5urpkeWchoezF/exec";
+
 document
     .getElementById("image")
     .addEventListener("change", previewImage);
@@ -6,39 +8,45 @@ document
     .getElementById("sendBtn")
     .addEventListener("click", send);
 
-function send(){
+async function send() {
+    const text = document
+        .getElementById("txt")
+        .value;
 
-    const text =
-        document.getElementById("txt")
-            .value;
-
-    document
-        .getElementById("result")
-        .innerHTML=
-        "入力内容："+text;
-
-}
-
-function previewImage(){
-
-    const file=
-        document
-            .getElementById("image")
-            .files[0];
-
-    if(!file){
+    if (!text) {
+        alert("入力してください");
         return;
     }
 
-    const reader=
-        new FileReader();
+    await fetch(gasUrl, {
+        method: "POST",
+        body: JSON.stringify({
+            message: text
+        })
+    });
 
-    reader.onload=function(e){
-        const img= document.getElementById("preview");
-        img.src= e.target.result;
-        img.style.display="block";
+    document
+        .getElementById("result")
+        .innerHTML = "保存しました：" + text;
+}
 
+function previewImage() {
+    const file = document
+        .getElementById("image")
+        .files[0];
+
+    if (!file) {
+        return;
     }
+
+    const reader = new FileReader();
+
+    reader.onload = function (e) {
+        const img = document.getElementById("preview");
+
+        img.src = e.target.result;
+        img.style.display = "block";
+    };
 
     reader.readAsDataURL(file);
 }
