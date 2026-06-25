@@ -1,13 +1,19 @@
 const liffId = "2010495117-Yc1KZJ4o";
 const gasUrl = "https://script.google.com/macros/s/AKfycbyiMoulKLMG9MTisDZC8jdfQ6KeQwS6ia7R80YZxMHrXoSLC_-zrmL5urpkeWchoezF/exec";
 
-document
-    .getElementById("image")
-    .addEventListener("change", previewImage);
+document.getElementById("sendBtn").addEventListener("click", send);
 
-document
-    .getElementById("sendBtn")
-    .addEventListener("click", send);
+addPreview("mainImage1", "previewMainImage1");
+addPreview("mainImage2", "previewMainImage2");
+addPreview("mainImage3", "previewMainImage3");
+
+addPreview("neckLabelImage1", "previewNeckLabelImage1");
+addPreview("neckLabelImage2", "previewNeckLabelImage2");
+addPreview("neckLabelImage3", "previewNeckLabelImage3");
+
+addPreview("keyChainImage1", "previewKeyChainImage1");
+addPreview("keyChainImage2", "previewKeyChainImage2");
+addPreview("keyChainImage3", "previewKeyChainImage3");
 
 async function initLiff() {
     if (typeof liff !== "undefined") {
@@ -18,65 +24,72 @@ async function initLiff() {
 initLiff();
 
 async function send() {
-    alert("send");
-    // 書き換える要素取得
     const button = document.getElementById("sendBtn");
     const result = document.getElementById("result");
 
-    //入力してもらったデータ取得
-    const text = document.getElementById("txt").value;
-    const imageFile = document.getElementById("image").files[0];
+    const designRequest = document.getElementById("designRequest").value;
+    const contents = document.getElementById("contents").value;
+    const capOption = document.getElementById("capOption").value;
+    const ledOption = document.getElementById("ledOption").value;
+    const shopName = document.getElementById("shopName").value;
+    const zip = document.getElementById("zip").value;
+    const address = document.getElementById("address").value;
+    const telNumber = document.getElementById("telNumber").value;
+    const billingName = document.getElementById("billingName").value;
+    const remarks = document.getElementById("remarks").value;
 
-    if (!text) {
-        alert("入力してください");
+    const deliveryTime = document.querySelector('input[name="deliveryTime"]:checked').value;
+    const leaveAtDoor = document.querySelector('input[name="leaveAtDoor"]:checked').value;
+
+    if (!designRequest) {
+        alert("デザインイメージを入力してください");
         return;
     }
 
-    if (!imageFile) {
-    alert("画像を選択してください");
-    return;
-}
+    if (!contents) {
+        alert("中身、本数を入力してください");
+        return;
+    }
 
-    // ボタン連打防止
     button.disabled = true;
     button.innerText = "送信中...";
     result.innerHTML = "少々お待ちください";
 
-    // データ送信
     try {
-
         let profile = null;
+
         if (typeof liff !== "undefined" && liff.isLoggedIn()) {
             profile = await liff.getProfile();
         }
 
-        const imageBase64 = await fileToBase64(imageFile);
+        const payload = {
+            displayName: profile ? profile.displayName : "",
+            userId: profile ? profile.userId : "",
 
-        const response = await fetch(gasUrl, {
+            designRequest: designRequest,
+            contents: contents,
+            capOption: capOption,
+            ledOption: ledOption,
+            shopName: shopName,
+            zip: zip,
+            address: address,
+            telNumber: telNumber,
+            deliveryTime: deliveryTime,
+            leaveAtDoor: leaveAtDoor,
+            billingName: billingName,
+            remarks: remarks,
+
+            mainImages: await getImageFiles(["mainImage1", "mainImage2", "mainImage3"]),
+            neckLabelImages: await getImageFiles(["neckLabelImage1", "neckLabelImage2", "neckLabelImage3"]),
+            keyChainImages: await getImageFiles(["keyChainImage1", "keyChainImage2", "keyChainImage3"])
+        };
+
+        await fetch(gasUrl, {
             method: "POST",
             mode: "no-cors",
-            body: JSON.stringify({
-                message: text,
-
-                imageBase64: imageBase64,
-                fileName: imageFile.name,
-                mimeType: imageFile.type,
-
-                userId: profile ? profile.userId : "",
-                displayName: profile ? profile.displayName : ""
-            })
+            body: JSON.stringify(payload)
         });
 
-//         no-corsではGASからの返事は読めない
-//         const responseText = await response.text();
-//         console.log(responseText);
-
-
-//        if (!response.ok) {
-//            throw new Error(responseText);
-//        }
-
-        // ボタンのテキスト書き換え & 送信完了の文字を出す
         button.innerText = "送信完了！";
         result.innerHTML = "✅ 送信完了！";
 
@@ -89,30 +102,47 @@ async function send() {
     }
 }
 
-function previewImage() {
-    const file = document
-        .getElementById("image")
-        .files[0];
+function addPreview(inputId, previewId) {
+    document.getElementById(inputId).addEventListener("change", function () {
+        const file = document.getElementById(inputId).files[0];
 
-    if (!file) {
-        return;
+        if (!file) {
+            return;
+        }
+
+        const reader = new FileReader();
+
+        reader.onload = function (e) {
+            const img = document.getElementById(previewId);
+            img.src = e.target.result;
+            img.style.display = "block";
+        };
+
+        reader.readAsDataURL(file);
+    });
+}
+
+async function getImageFiles(inputIds) {
+    const images = [];
+
+    for (const inputId of inputIds) {
+        const file = document.getElementById(inputId).files[0];
+
+        if (file) {
+            images.push({
+                inputId: inputId,
+                fileName: file.name,
+                mimeType: file.type,
+                imageBase64: await fileToBase64(file)
+            });
+        }
     }
 
-    const reader = new FileReader();
-
-    reader.onload = function (e) {
-        const img = document.getElementById("preview");
-
-        img.src = e.target.result;
-        img.style.display = "block";
-    };
-
-    reader.readAsDataURL(file);
+    return images;
 }
 
 function fileToBase64(file) {
     return new Promise((resolve, reject) => {
-
         const reader = new FileReader();
 
         reader.onload = () => {
@@ -120,7 +150,7 @@ function fileToBase64(file) {
         };
 
         reader.onerror = () => {
-            reject("画像読み込み失敗");
+            reject(new Error("画像読み込み失敗"));
         };
 
         reader.readAsDataURL(file);

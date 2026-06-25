@@ -12,23 +12,98 @@
 
     <div class="card">
 
-        <h2>YOLO LIFFテスト</h2>
+        <p class="description">
+            この度はご注文ありがとうございます。<br>
+            ご希望のデザインイメージや必要事項をご入力ください。<br>
+            ご入力いただいた内容をもとに、完成イメージを作成させていただきます。
+        </p>
 
-        <input id="txt" placeholder="好きな文字を入力">
+        <label>メイン画像</label>
+        <input id="mainImage1" type="file" accept="image/*">
+        <input id="mainImage2" type="file" accept="image/*">
+        <input id="mainImage3" type="file" accept="image/*">
 
-        <input
-                id="image"
-                type="file"
-                accept="image/*">
+        <div class="preview-area">
+            <img id="previewMainImage1">
+            <img id="previewMainImage2">
+            <img id="previewMainImage3">
+        </div>
+
+        <label for="designRequest">デザインイメージ</label>
+        <textarea id="designRequest" placeholder="デザインの要望"></textarea>
+
+        <label for="contents">中身、本数</label>
+        <textarea id="contents" placeholder="〇を□本など"></textarea>
+
+        <div class="option-title"> ▼ オプション項目 </div>
+
+        <label>ネックシール画像</label>
+        <input id="neckLabelImage1" type="file" accept="image/*">
+        <input id="neckLabelImage2" type="file" accept="image/*">
+        <input id="neckLabelImage3" type="file" accept="image/*">
+
+        <div class="preview-area">
+            <img id="previewNeckLabelImage1">
+            <img id="previewNeckLabelImage2">
+            <img id="previewNeckLabelImage3">
+        </div>
+
+        <label>キーホルダー画像</label>
+        <input id="keyChainImage1" type="file" accept="image/*">
+        <input id="keyChainImage2" type="file" accept="image/*">
+        <input id="keyChainImage3" type="file" accept="image/*">
+
+        <div class="preview-area">
+            <img id="previewKeyChainImage1">
+            <img id="previewKeyChainImage2">
+            <img id="previewKeyChainImage3">
+        </div>
+
+        <label for="capOption">キャップ変更</label>
+        <textarea id="capOption" placeholder="ブラック、ピンクなど"></textarea>
+
+        <label for="ledOption">LED</label>
+        <textarea id="ledOption" placeholder="LED6本など"></textarea>
+
+        <label for="shopName">店名</label>
+        <input id="shopName" type="text" placeholder="例：オリジナルシャンパン専門店 YOLO" autocomplete="organization">
+
+        <label for="zip">郵便番号</label>
+        <input id="zip" type="text" placeholder="例：252-0001" autocomplete="postal-code">
+
+        <label for="address">住所</label>
+        <input id="address" type="text" placeholder="例：神奈川県相模原市〇〇" autocomplete="street-address">
+
+        <label for="telNumber">電話番号</label>
+        <input id="telNumber" type="text" placeholder="例：0427687877" autocomplete="tel">
+
+        <p>お届け希望時間</p>
+
+        <div class="radio-group">
+            <label><input type="radio" name="deliveryTime" value="指定なし" checked>指定なし</label>
+            <label><input type="radio" name="deliveryTime" value="午前中">午前中</label>
+            <label><input type="radio" name="deliveryTime" value="14時〜16時">14時〜16時</label>
+            <label><input type="radio" name="deliveryTime" value="16時〜18時">16時〜18時</label>
+            <label><input type="radio" name="deliveryTime" value="18時〜20時">18時〜20時</label>
+            <label><input type="radio" name="deliveryTime" value="19時〜21時">19時〜21時</label>
+        </div>
+
+        <p>置き配希望</p>
+
+        <div class="radio-group">
+            <label><input type="radio" name="leaveAtDoor" value="希望する">希望する</label>
+            <label><input type="radio" name="leaveAtDoor" value="希望しない">希望しない</label>
+        </div>
+
+        <label for="billingName">請求書名義</label>
+        <input id="billingName" type="text" placeholder="例：株式会社○○" autocomplete="off">
+
+        <label for="remarks">その他備考</label>
+        <textarea id="remarks" placeholder="その他ご要望がございましたらご記入ください"></textarea>
 
         <br><br>
 
-        <img id="preview">
-
-        <button id="sendBtn">
-            送信
-        </button>
-
+        <button id="sendBtn">送信</button>
         <div id="result"></div>
 
     </div>
