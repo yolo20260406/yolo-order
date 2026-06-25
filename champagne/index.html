@@ -1,116 +1,280 @@
 <!DOCTYPE html>
 <html lang="ja">
 
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>LIFFテスト</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>オリジナルシャンパン注文フォーム</title>
+    <link rel="stylesheet" href="./css/style.css">
+</head>
 
-        <link rel="stylesheet" href="./css/style.css">
-    </head>
+<body>
 
-    <body>
+<div class="card">
 
-    <div class="card">
+    <p class="description">
+        この度はご注文ありがとうございます。<br>
+        ご希望のデザインイメージや必要事項をご入力ください。<br>
+        ご入力いただいた内容をもとに、完成イメージを作成させていただきます。
+    </p>
 
-        <p class="description">
-            この度はご注文ありがとうございます。<br>
-            ご希望のデザインイメージや必要事項をご入力ください。<br>
-            ご入力いただいた内容をもとに、完成イメージを作成させていただきます。
-        </p>
+    <label class="required">メイン画像</label>
 
-        <label class="required">メイン画像</label>
-        <input id="mainImage1" type="file" accept="image/*">
-        <input id="mainImage2" type="file" accept="image/*">
-        <input id="mainImage3" type="file" accept="image/*">
-
-        <div class="preview-area">
-            <img id="previewMainImage1">
-            <img id="previewMainImage2">
-            <img id="previewMainImage3">
+    <div class="preview-wrapper">
+        <div class="file-row">
+            <label class="file-select-btn" for="mainImage1">ファイルを選択</label>
+            <span id="fileNameMainImage1" class="file-name">選択されていません</span>
+            <button id="removeMainImage1" class="remove-btn" style="display:none" type="button"
+                    onclick="removeImage('mainImage1','previewMainImage1','removeMainImage1')">
+                削除
+            </button>
+            <input id="mainImage1" class="file-input" type="file" accept="image/*">
         </div>
 
-        <label for="designRequest" class="required">デザインイメージ</label>
-        <textarea id="designRequest" placeholder="デザインの要望"></textarea>
-
-        <label for="contents" class="required">中身、本数</label>
-        <textarea id="contents" placeholder="〇を□本など"></textarea>
-
-        <div class="option-title"> ▼ オプション項目 </div>
-
-        <label>ネックシール画像</label>
-        <input id="neckLabelImage1" type="file" accept="image/*">
-        <input id="neckLabelImage2" type="file" accept="image/*">
-        <input id="neckLabelImage3" type="file" accept="image/*">
-
-        <div class="preview-area">
-            <img id="previewNeckLabelImage1">
-            <img id="previewNeckLabelImage2">
-            <img id="previewNeckLabelImage3">
-        </div>
-
-        <label>キーホルダー画像</label>
-        <input id="keyChainImage1" type="file" accept="image/*">
-        <input id="keyChainImage2" type="file" accept="image/*">
-        <input id="keyChainImage3" type="file" accept="image/*">
-
-        <div class="preview-area">
-            <img id="previewKeyChainImage1">
-            <img id="previewKeyChainImage2">
-            <img id="previewKeyChainImage3">
-        </div>
-
-        <label for="capOption" >キャップ変更</label>
-        <textarea id="capOption" placeholder="ブラック、ピンクなど"></textarea>
-
-        <label for="ledOption">LED</label>
-        <textarea id="ledOption" placeholder="LED6本など"></textarea>
-
-        <label for="shopName" class="required">店名</label>
-        <input id="shopName" class="required" type="text" placeholder="例：オリジナルシャンパン専門店 YOLO" autocomplete="organization">
-
-        <label for="zip" class="required">郵便番号</label>
-        <input id="zip" type="text" placeholder="例：252-0001" autocomplete="postal-code">
-
-        <label for="address" class="required">住所</label>
-        <input id="address" class="required" type="text" placeholder="例：神奈川県相模原市〇〇" autocomplete="street-address">
-
-        <label for="telNumber" class="required">電話番号</label>
-        <input id="telNumber" type="text" placeholder="例：0427687877" autocomplete="tel">
-
-        <p class="required">お届け希望時間</p>
-
-        <div class="radio-group">
-            <label><input type="radio" name="deliveryTime" value="指定なし" checked>指定なし</label>
-            <label><input type="radio" name="deliveryTime" value="午前中">午前中</label>
-            <label><input type="radio" name="deliveryTime" value="14時〜16時">14時〜16時</label>
-            <label><input type="radio" name="deliveryTime" value="16時〜18時">16時〜18時</label>
-            <label><input type="radio" name="deliveryTime" value="18時〜20時">18時〜20時</label>
-            <label><input type="radio" name="deliveryTime" value="19時〜21時">19時〜21時</label>
-        </div>
-
-        <p class="required">置き配希望</p>
-
-        <div class="radio-group">
-            <label><input type="radio" name="leaveAtDoor" value="希望する">希望する</label>
-            <label><input type="radio" name="leaveAtDoor" value="希望しない" checked>希望しない</label>
-        </div>
-
-        <label for="billingName">請求書名義</label>
-        <input id="billingName" type="text" placeholder="例：株式会社○○" autocomplete="off">
-
-        <label for="remarks">その他備考</label>
-        <textarea id="remarks" placeholder="その他ご要望がございましたらご記入ください"></textarea>
-
-        <br><br>
-
-        <button id="sendBtn">送信</button>
-        <div id="result"></div>
-
+        <img id="previewMainImage1">
     </div>
 
-    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-    <script src="./js/app.js"></script>
+    <div class="preview-wrapper">
+        <div class="file-row">
+            <label class="file-select-btn" for="mainImage2">ファイルを選択</label>
+            <span id="fileNameMainImage2" class="file-name">選択されていません</span>
+            <button id="removeMainImage2" class="remove-btn" style="display:none" type="button"
+                    onclick="removeImage('mainImage2','previewMainImage2','removeMainImage2')">
+                削除
+            </button>
+            <input id="mainImage2" class="file-input" type="file" accept="image/*">
+        </div>
 
-    </body>
+        <img id="previewMainImage2">
+    </div>
+
+    <div class="preview-wrapper">
+        <div class="file-row">
+            <label class="file-select-btn" for="mainImage3">ファイルを選択</label>
+            <span id="fileNameMainImage3" class="file-name">選択されていません</span>
+            <button id="removeMainImage3" class="remove-btn" style="display:none" type="button"
+                    onclick="removeImage('mainImage3','previewMainImage3','removeMainImage3')">
+                削除
+            </button>
+            <input id="mainImage3" class="file-input" type="file" accept="image/*">
+        </div>
+
+        <img id="previewMainImage3">
+    </div>
+
+    <label for="designRequest" class="required">デザインイメージ</label>
+    <textarea id="designRequest" placeholder="デザインの要望"></textarea>
+
+    <label for="contents" class="required">中身、本数</label>
+    <textarea id="contents" placeholder="〇を□本など"></textarea>
+
+    <div class="option-title">▼ オプション項目</div>
+
+    <label>ネックシール画像</label>
+
+    <label>ネックシール画像</label>
+
+<div class="preview-wrapper">
+    <div class="file-row">
+        <label class="file-select-btn" for="neckLabelImage1">ファイルを選択</label>
+        <span id="fileNameNeckLabelImage1" class="file-name">選択されていません</span>
+
+        <button id="removeNeckLabelImage1"
+                class="remove-btn"
+                style="display:none"
+                type="button"
+                onclick="removeImage('neckLabelImage1','previewNeckLabelImage1','removeNeckLabelImage1')">
+
+            削除
+
+        </button>
+
+        <input id="neckLabelImage1"
+               class="file-input"
+               type="file"
+               accept="image/*">
+    </div>
+
+    <img id="previewNeckLabelImage1">
+</div>
+
+
+<div class="preview-wrapper">
+    <div class="file-row">
+        <label class="file-select-btn" for="neckLabelImage2">ファイルを選択</label>
+        <span id="fileNameNeckLabelImage2" class="file-name">選択されていません</span>
+
+        <button id="removeNeckLabelImage2"
+                class="remove-btn"
+                style="display:none"
+                type="button"
+                onclick="removeImage('neckLabelImage2','previewNeckLabelImage2','removeNeckLabelImage2')">
+
+            削除
+
+        </button>
+
+        <input id="neckLabelImage2"
+               class="file-input"
+               type="file"
+               accept="image/*">
+    </div>
+
+    <img id="previewNeckLabelImage2">
+</div>
+
+
+<div class="preview-wrapper">
+    <div class="file-row">
+        <label class="file-select-btn" for="neckLabelImage3">ファイルを選択</label>
+        <span id="fileNameNeckLabelImage3" class="file-name">選択されていません</span>
+
+        <button id="removeNeckLabelImage3"
+                class="remove-btn"
+                style="display:none"
+                type="button"
+                onclick="removeImage('neckLabelImage3','previewNeckLabelImage3','removeNeckLabelImage3')">
+
+            削除
+
+        </button>
+
+        <input id="neckLabelImage3"
+               class="file-input"
+               type="file"
+               accept="image/*">
+    </div>
+
+    <img id="previewNeckLabelImage3">
+</div>
+
+    <label>キーホルダー画像</label>
+
+    <label>キーホルダー画像</label>
+
+<div class="preview-wrapper">
+    <div class="file-row">
+        <label class="file-select-btn" for="keyChainImage1">ファイルを選択</label>
+        <span id="fileNameKeyChainImage1" class="file-name">選択されていません</span>
+
+        <button id="removeKeyChainImage1"
+                class="remove-btn"
+                style="display:none"
+                type="button"
+                onclick="removeImage('keyChainImage1','previewKeyChainImage1','removeKeyChainImage1')">
+
+            削除
+
+        </button>
+
+        <input id="keyChainImage1"
+               class="file-input"
+               type="file"
+               accept="image/*">
+    </div>
+
+    <img id="previewKeyChainImage1">
+</div>
+
+
+<div class="preview-wrapper">
+    <div class="file-row">
+        <label class="file-select-btn" for="keyChainImage2">ファイルを選択</label>
+        <span id="fileNameKeyChainImage2" class="file-name">選択されていません</span>
+
+        <button id="removeKeyChainImage2"
+                class="remove-btn"
+                style="display:none"
+                type="button"
+                onclick="removeImage('keyChainImage2','previewKeyChainImage2','removeKeyChainImage2')">
+
+            削除
+
+        </button>
+
+        <input id="keyChainImage2"
+               class="file-input"
+               type="file"
+               accept="image/*">
+    </div>
+
+    <img id="previewKeyChainImage2">
+</div>
+
+
+<div class="preview-wrapper">
+    <div class="file-row">
+        <label class="file-select-btn" for="keyChainImage3">ファイルを選択</label>
+        <span id="fileNameKeyChainImage3" class="file-name">選択されていません</span>
+
+        <button id="removeKeyChainImage3"
+                class="remove-btn"
+                style="display:none"
+                type="button"
+                onclick="removeImage('keyChainImage3','previewKeyChainImage3','removeKeyChainImage3')">
+
+            削除
+
+        </button>
+
+        <input id="keyChainImage3"
+               class="file-input"
+               type="file"
+               accept="image/*">
+    </div>
+
+    <img id="previewKeyChainImage3">
+</div>
+
+    <label for="capOption">キャップ変更</label>
+    <textarea id="capOption" placeholder="ブラック、ピンクなど"></textarea>
+
+    <label for="ledOption">LED</label>
+    <textarea id="ledOption" placeholder="LED6本など"></textarea>
+
+    <label for="shopName" class="required">店名</label>
+    <input id="shopName" type="text" placeholder="例：オリジナルシャンパン専門店 YOLO" autocomplete="organization">
+
+    <label for="zip" class="required">郵便番号</label>
+    <input id="zip" type="text" placeholder="例：252-0001" autocomplete="postal-code">
+
+    <label for="address" class="required">住所</label>
+    <input id="address" type="text" placeholder="例：神奈川県相模原市〇〇" autocomplete="street-address">
+
+    <label for="telNumber" class="required">電話番号</label>
+    <input id="telNumber" type="text" placeholder="例：0427687877" autocomplete="tel">
+
+    <p class="required">お届け希望時間</p>
+
+    <div class="radio-group">
+        <label><input type="radio" name="deliveryTime" value="指定なし" checked>指定なし</label>
+        <label><input type="radio" name="deliveryTime" value="午前中">午前中</label>
+        <label><input type="radio" name="deliveryTime" value="14時〜16時">14時〜16時</label>
+        <label><input type="radio" name="deliveryTime" value="16時〜18時">16時〜18時</label>
+        <label><input type="radio" name="deliveryTime" value="18時〜20時">18時〜20時</label>
+        <label><input type="radio" name="deliveryTime" value="19時〜21時">19時〜21時</label>
+    </div>
+
+    <p class="required">置き配希望</p>
+
+    <div class="radio-group">
+        <label><input type="radio" name="leaveAtDoor" value="希望する">希望する</label>
+        <label><input type="radio" name="leaveAtDoor" value="希望しない" checked>希望しない</label>
+    </div>
+
+    <label for="billingName">請求書名義</label>
+    <input id="billingName" type="text" placeholder="例：株式会社○○" autocomplete="organization">
+
+    <label for="remarks">その他備考</label>
+    <textarea id="remarks" placeholder="その他ご要望がございましたらご記入ください"></textarea>
+
+    <button id="sendBtn">送信</button>
+    <div id="result"></div>
+
+</div>
+
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+<script src="./js/app.js?v=2"></script>
+
+</body>
 </html>

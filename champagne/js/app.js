@@ -3,17 +3,17 @@ const gasUrl = "https://script.google.com/macros/s/AKfycbyiMoulKLMG9MTisDZC8jdfQ
 
 document.getElementById("sendBtn").addEventListener("click", send);
 
-addPreview("mainImage1", "previewMainImage1");
-addPreview("mainImage2", "previewMainImage2");
-addPreview("mainImage3", "previewMainImage3");
+addPreview("mainImage1", "previewMainImage1", "removeMainImage1");
+addPreview("mainImage2", "previewMainImage2", "removeMainImage2");
+addPreview("mainImage3", "previewMainImage3", "removeMainImage3");
 
-addPreview("neckLabelImage1", "previewNeckLabelImage1");
-addPreview("neckLabelImage2", "previewNeckLabelImage2");
-addPreview("neckLabelImage3", "previewNeckLabelImage3");
+addPreview("neckLabelImage1", "previewNeckLabelImage1", "removeNeckLabelImage1");
+addPreview("neckLabelImage2", "previewNeckLabelImage2", "removeNeckLabelImage2");
+addPreview("neckLabelImage3", "previewNeckLabelImage3", "removeNeckLabelImage3");
 
-addPreview("keyChainImage1", "previewKeyChainImage1");
-addPreview("keyChainImage2", "previewKeyChainImage2");
-addPreview("keyChainImage3", "previewKeyChainImage3");
+addPreview("keyChainImage1", "previewKeyChainImage1", "removeKeyChainImage1");
+addPreview("keyChainImage2", "previewKeyChainImage2", "removeKeyChainImage2");
+addPreview("keyChainImage3", "previewKeyChainImage3", "removeKeyChainImage3");
 
 async function initLiff() {
     if (typeof liff !== "undefined") {
@@ -96,24 +96,79 @@ async function send() {
     }
 }
 
-function addPreview(inputId, previewId) {
+function addPreview(inputId, previewId, buttonId) {
     document.getElementById(inputId).addEventListener("change", function () {
-        const file = document.getElementById(inputId).files[0];
+        previewImage(inputId, previewId, buttonId, "fileName" + capitalize(inputId));
+    });
+}
 
-        if (!file) {
-            return;
+function previewImage(inputId, previewId, buttonId) {
+
+    const file = document.getElementById(inputId).files[0];
+
+    if (!file) {
+        return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = function (e) {
+
+        const img = document.getElementById(previewId);
+
+        img.src = e.target.result;
+        img.style.display = "block";
+
+
+        const button = document.getElementById(buttonId);
+
+        if (button) {
+            button.style.display = "inline-block";
         }
 
-        const reader = new FileReader();
 
-        reader.onload = function (e) {
-            const img = document.getElementById(previewId);
-            img.src = e.target.result;
-            img.style.display = "block";
-        };
+        const fileName = document.getElementById(
+            "fileName" +
+            inputId.charAt(0).toUpperCase() +
+            inputId.slice(1)
+        );
 
-        reader.readAsDataURL(file);
-    });
+        if (fileName) {
+            fileName.textContent = file.name;
+        }
+
+    };
+
+    reader.readAsDataURL(file);
+
+}
+
+function removeImage(inputId, previewId, buttonId) {
+    document.getElementById(inputId).value = "";
+
+    const img = document.getElementById(previewId);
+
+    if (img) {
+        img.src = "";
+        img.style.display = "none";
+    }
+
+    const button = document.getElementById(buttonId);
+
+    if (button) {
+        button.style.display = "none";
+    }
+
+    const fileNameId = "fileName" + inputId.charAt(0).toUpperCase() + inputId.slice(1);
+    const fileName = document.getElementById(fileNameId);
+
+    if (fileName) {
+        fileName.textContent = "選択されていません";
+    }
+}
+
+function capitalize(text) {
+    return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
 async function getImageFiles(inputIds) {
@@ -152,11 +207,10 @@ function fileToBase64(file) {
 }
 
 function validateRequiredFields() {
-
     const requiredLabels = document.querySelectorAll("label.required");
     const errors = [];
 
-        // メイン画像は1枚以上必須
+    // メイン画像は1枚以上必須
     const hasMainImage =
         document.getElementById("mainImage1").files.length ||
         document.getElementById("mainImage2").files.length ||
@@ -167,8 +221,12 @@ function validateRequiredFields() {
     }
 
     for (const label of requiredLabels) {
-
         const inputId = label.getAttribute("for");
+
+        if (!inputId) {
+            continue;
+        }
+
         const input = document.getElementById(inputId);
 
         if (!input) {
@@ -178,20 +236,12 @@ function validateRequiredFields() {
         if (!input.value.trim()) {
             errors.push(label.textContent);
         }
-
     }
 
     if (errors.length > 0) {
-
-        alert(
-            "以下の項目を入力してください。\n\n" +
-            errors.join("\n")
-        );
-
+        alert("以下の項目を入力してください。\n\n" + errors.join("\n"));
         return false;
-
     }
 
     return true;
-
 }
