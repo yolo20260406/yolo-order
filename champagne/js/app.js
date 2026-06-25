@@ -98,12 +98,11 @@ async function send() {
 
 function addPreview(inputId, previewId, buttonId) {
     document.getElementById(inputId).addEventListener("change", function () {
-        previewImage(inputId, previewId, buttonId, "fileName" + capitalize(inputId));
+        previewImage(inputId, previewId, buttonId);
     });
 }
 
 function previewImage(inputId, previewId, buttonId) {
-
     const file = document.getElementById(inputId).files[0];
 
     if (!file) {
@@ -113,12 +112,10 @@ function previewImage(inputId, previewId, buttonId) {
     const reader = new FileReader();
 
     reader.onload = function (e) {
-
         const img = document.getElementById(previewId);
 
         img.src = e.target.result;
         img.style.display = "block";
-
 
         const button = document.getElementById(buttonId);
 
@@ -126,21 +123,14 @@ function previewImage(inputId, previewId, buttonId) {
             button.style.display = "inline-block";
         }
 
-
-        const fileName = document.getElementById(
-            "fileName" +
-            inputId.charAt(0).toUpperCase() +
-            inputId.slice(1)
-        );
+        const fileName = document.getElementById(getFileNameId(inputId));
 
         if (fileName) {
             fileName.textContent = file.name;
         }
-
     };
 
     reader.readAsDataURL(file);
-
 }
 
 function removeImage(inputId, previewId, buttonId) {
@@ -159,16 +149,15 @@ function removeImage(inputId, previewId, buttonId) {
         button.style.display = "none";
     }
 
-    const fileNameId = "fileName" + inputId.charAt(0).toUpperCase() + inputId.slice(1);
-    const fileName = document.getElementById(fileNameId);
+    const fileName = document.getElementById(getFileNameId(inputId));
 
     if (fileName) {
         fileName.textContent = "選択されていません";
     }
 }
 
-function capitalize(text) {
-    return text.charAt(0).toUpperCase() + text.slice(1);
+function getFileNameId(inputId) {
+    return "fileName" + inputId.charAt(0).toUpperCase() + inputId.slice(1);
 }
 
 async function getImageFiles(inputIds) {
@@ -194,11 +183,11 @@ function fileToBase64(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
 
-        reader.onload = () => {
+        reader.onload = function () {
             resolve(reader.result);
         };
 
-        reader.onerror = () => {
+        reader.onerror = function () {
             reject(new Error("画像読み込み失敗"));
         };
 
