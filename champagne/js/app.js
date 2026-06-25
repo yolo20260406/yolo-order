@@ -19,8 +19,11 @@ initLiff();
 
 async function send() {
     alert("send");
+    // 書き換える要素取得
     const button = document.getElementById("sendBtn");
     const result = document.getElementById("result");
+
+    //入力してもらったデータ取得
     const text = document.getElementById("txt").value;
 
     if (!text) {
@@ -28,10 +31,12 @@ async function send() {
         return;
     }
 
+    // ボタン連打防止
     button.disabled = true;
     button.innerText = "送信中...";
     result.innerHTML = "少々お待ちください";
 
+    // データ送信
     try {
         const response = await fetch(gasUrl, {
             method: "POST",
@@ -44,6 +49,7 @@ async function send() {
 
         console.log(responseText);
 
+        // ボタンのテキスト書き換え & 送信完了の文字を出す
         button.innerText = "送信完了！";
         result.innerHTML = "✅ 送信完了！";
 
