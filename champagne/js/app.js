@@ -41,13 +41,7 @@ async function send() {
     const deliveryTime = document.querySelector('input[name="deliveryTime"]:checked').value;
     const leaveAtDoor = document.querySelector('input[name="leaveAtDoor"]:checked').value;
 
-    if (!designRequest) {
-        alert("デザインイメージを入力してください");
-        return;
-    }
-
-    if (!contents) {
-        alert("中身、本数を入力してください");
+    if (!validateRequiredFields()) {
         return;
     }
 
@@ -155,4 +149,49 @@ function fileToBase64(file) {
 
         reader.readAsDataURL(file);
     });
+}
+
+function validateRequiredFields() {
+
+    const requiredLabels = document.querySelectorAll("label.required");
+    const errors = [];
+
+        // メイン画像は1枚以上必須
+    const hasMainImage =
+        document.getElementById("mainImage1").files.length ||
+        document.getElementById("mainImage2").files.length ||
+        document.getElementById("mainImage3").files.length;
+
+    if (!hasMainImage) {
+        errors.push("メイン画像");
+    }
+
+    for (const label of requiredLabels) {
+
+        const inputId = label.getAttribute("for");
+        const input = document.getElementById(inputId);
+
+        if (!input) {
+            continue;
+        }
+
+        if (!input.value.trim()) {
+            errors.push(label.textContent);
+        }
+
+    }
+
+    if (errors.length > 0) {
+
+        alert(
+            "以下の項目を入力してください。\n\n" +
+            errors.join("\n")
+        );
+
+        return false;
+
+    }
+
+    return true;
+
 }
