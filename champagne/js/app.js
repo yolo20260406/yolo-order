@@ -25,11 +25,17 @@ async function send() {
 
     //入力してもらったデータ取得
     const text = document.getElementById("txt").value;
+    const imageFile = document.getElementById("image").files[0];
 
     if (!text) {
         alert("入力してください");
         return;
     }
+
+    if (!imageFile) {
+    alert("画像を選択してください");
+    return;
+}
 
     // ボタン連打防止
     button.disabled = true;
@@ -38,16 +44,37 @@ async function send() {
 
     // データ送信
     try {
+
+        let profile = null;
+        if (typeof liff !== "undefined" && liff.isLoggedIn()) {
+            profile = await liff.getProfile();
+        }
+
+        const imageBase64 = await fileToBase64(imageFile);
+
         const response = await fetch(gasUrl, {
             method: "POST",
+            mode: "no-cors",
             body: JSON.stringify({
-                message: text
+                message: text,
+
+                imageBase64: imageBase64,
+                fileName: imageFile.name,
+                mimeType: imageFile.type,
+
+                userId: profile ? profile.userId : "",
+                displayName: profile ? profile.displayName : ""
             })
         });
 
-        const responseText = await response.text();
+//         no-corsではGASからの返事は読めない
+//         const responseText = await response.text();
+//         console.log(responseText);
 
-        console.log(responseText);
+
+//        if (!response.ok) {
+//            throw new Error(responseText);
+//        }
 
         // ボタンのテキスト書き換え & 送信完了の文字を出す
         button.innerText = "送信完了！";
@@ -81,4 +108,21 @@ function previewImage() {
     };
 
     reader.readAsDataURL(file);
+}
+
+function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+
+        const reader = new FileReader();
+
+        reader.onload = () => {
+            resolve(reader.result);
+        };
+
+        reader.onerror = () => {
+            reject("画像読み込み失敗");
+        };
+
+        reader.readAsDataURL(file);
+    });
 }
