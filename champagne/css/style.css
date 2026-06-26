@@ -33,9 +33,11 @@ input[type="text"], input[type="email"], input[type="tel"], input[type="number"]
 }
 
 .preview-wrapper img{
-    width:150px !important;
-    height:150px !important;
-    object-fit:contain;
+    display:none;
+    width:180px;
+    height:180px;
+    object-fit:cover;
+    object-position:center;
     margin-top:10px;
     border-radius:10px;
     border:1px solid #ddd;
