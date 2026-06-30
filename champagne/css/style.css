@@ -10,6 +10,7 @@ body{
     border-radius:12px;
 }
 
+/* 入力欄だけ16px（iPhone LIFFズーム対策） */
 input[type="text"],
 input[type="email"],
 input[type="tel"],
@@ -20,7 +21,7 @@ select{
     padding:12px;
     box-sizing:border-box;
     margin-top:10px;
-    font-size:16px;   /* iPhoneの自動ズーム対策 */
+    font-size:16px;
 }
 
 textarea{
@@ -38,12 +39,10 @@ textarea{
     border:none;
     border-radius:8px;
     cursor:pointer;
-    font-size:16px;
 }
 
 #result{
     margin-top:20px;
-    font-size:16px;
 }
 
 .preview-wrapper img{
@@ -75,7 +74,6 @@ button:active{
 .radio-group label{
     display:block;
     margin:8px 0;
-    font-size:16px;
 }
 
 .radio-group input[type="radio"]{
@@ -90,7 +88,7 @@ button:active{
     padding:12px;
     background:#f5f5f5;
     border-left:4px solid #06C755;
-    font-size:16px;
+    font-size:14px;
     font-weight:bold;
     color:#555;
     border-radius:6px;
@@ -98,7 +96,7 @@ button:active{
 
 .description{
     margin-bottom:25px;
-    font-size:16px;
+    font-size:14px;
     color:#666;
     line-height:1.7;
 }
@@ -129,13 +127,13 @@ button:active{
     padding:8px 12px;
     border-radius:6px;
     border:1px solid #ccc;
-    font-size:16px;
+    font-size:14px;
     white-space:nowrap;
     cursor:pointer;
 }
 
 .file-name{
-    font-size:16px;
+    font-size:14px;
     flex:1;
     overflow:hidden;
     white-space:nowrap;
@@ -146,11 +144,11 @@ button:active{
     display:none;
     width:auto;
     margin-left:8px;
-    padding:4px 10px;
+    padding:2px 8px;
     background:#6c757d;
     color:white;
     border:none;
     border-radius:4px;
-    font-size:14px;
+    font-size:12px;
     cursor:pointer;
 }
