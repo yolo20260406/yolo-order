@@ -1,7 +1,19 @@
 const liffId = "2010495117-Yc1KZJ4o";
 const gasUrl = "https://script.google.com/macros/s/AKfycbyiMoulKLMG9MTisDZC8jdfQ6KeQwS6ia7R80YZxMHrXoSLC_-zrmL5urpkeWchoezF/exec";
 
-const tempOrderId = "TEMP_" + Date.now() + "_" + Math.random().toString(36).slice(2);
+const now = new Date();
+
+const dateText =
+  now.getFullYear() +
+  String(now.getMonth() + 1).padStart(2, "0") +
+  String(now.getDate()).padStart(2, "0") +
+  "_" +
+  String(now.getHours()).padStart(2, "0") +
+  String(now.getMinutes()).padStart(2, "0") +
+  String(now.getSeconds()).padStart(2, "0") +
+  String(now.getMilliseconds()).padStart(3, "0");
+
+const tempOrderId = `TEMP_${dateText}`;
 
 const uploadState = {
   mainImage1: null,
