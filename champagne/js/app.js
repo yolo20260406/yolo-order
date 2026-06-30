@@ -171,10 +171,26 @@ function showPreview(inputId, previewId, buttonId, base64, fileNameText) {
   if (fileName) fileName.textContent = fileNameText;
 }
 
-function removeImage(inputId, previewId, buttonId) {
+async function removeImage(inputId, previewId, buttonId) {
   document.getElementById(inputId).value = "";
+
   uploadState[inputId] = null;
   clearPreview(inputId, previewId, buttonId);
+
+  try {
+    await fetch(gasUrl, {
+      method: "POST",
+      mode: "no-cors",
+      body: JSON.stringify({
+        action: "deleteImage",
+        tempOrderId,
+        inputId
+      })
+    });
+  } catch (error) {
+    console.error(error);
+    alert("Drive上の画像削除に失敗しました");
+  }
 }
 
 function clearPreview(inputId, previewId, buttonId) {
