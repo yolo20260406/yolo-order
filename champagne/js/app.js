@@ -1,7 +1,24 @@
 const liffId = "2010495117-Yc1KZJ4o";
 const gasUrl = "https://script.google.com/macros/s/AKfycbyiMoulKLMG9MTisDZC8jdfQ6KeQwS6ia7R80YZxMHrXoSLC_-zrmL5urpkeWchoezF/exec";
 
-document.getElementById("sendBtn").addEventListener("click", send);
+const imageData = {
+  mainImage1: null,
+  mainImage2: null,
+  mainImage3: null,
+  neckLabelImage1: null,
+  neckLabelImage2: null,
+  neckLabelImage3: null,
+  keyChainImage1: null,
+  keyChainImage2: null,
+  keyChainImage3: null
+};
+
+let processingCount = 0;
+
+const sendBtn = document.getElementById("sendBtn");
+const result = document.getElementById("result");
+
+sendBtn.addEventListener("click", send);
 
 addPreview("mainImage1", "previewMainImage1", "removeMainImage1");
 addPreview("mainImage2", "previewMainImage2", "removeMainImage2");
@@ -16,221 +33,213 @@ addPreview("keyChainImage2", "previewKeyChainImage2", "removeKeyChainImage2");
 addPreview("keyChainImage3", "previewKeyChainImage3", "removeKeyChainImage3");
 
 async function initLiff() {
-    if (typeof liff !== "undefined") {
-        await liff.init({ liffId: liffId });
-    }
+  if (typeof liff !== "undefined") {
+    await liff.init({ liffId });
+  }
 }
 
 initLiff();
 
 async function send() {
-    const button = document.getElementById("sendBtn");
-    const result = document.getElementById("result");
+  if (!validateRequiredFields()) return;
 
-    const designRequest = document.getElementById("designRequest").value;
-    const contents = document.getElementById("contents").value;
-    const capOption = document.getElementById("capOption").value;
-    const ledOption = document.getElementById("ledOption").value;
-    const shopName = document.getElementById("shopName").value;
-    const zip = document.getElementById("zip").value;
-    const address = document.getElementById("address").value;
-    const telNumber = document.getElementById("telNumber").value;
-    const billingName = document.getElementById("billingName").value;
-    const remarks = document.getElementById("remarks").value;
+  if (processingCount > 0) {
+    alert("画像を準備中です。少し待ってから送信してください。");
+    return;
+  }
 
-    const deliveryTime = document.querySelector('input[name="deliveryTime"]:checked').value;
-    const leaveAtDoor = document.querySelector('input[name="leaveAtDoor"]:checked').value;
+  sendBtn.disabled = true;
+  sendBtn.innerText = "送信中...";
+  result.innerHTML = "少々お待ちください";
 
-    if (!validateRequiredFields()) {
-        return;
+  try {
+    let profile = null;
+
+    if (typeof liff !== "undefined" && liff.isLoggedIn()) {
+      profile = await liff.getProfile();
     }
 
-    button.disabled = true;
-    button.innerText = "送信中...";
-    result.innerHTML = "少々お待ちください";
+    const payload = {
+      displayName: profile ? profile.displayName : "",
+      userId: profile ? profile.userId : "",
 
-    try {
-        let profile = null;
+      designRequest: getValue("designRequest"),
+      contents: getValue("contents"),
+      capOption: getValue("capOption"),
+      ledOption: getValue("ledOption"),
+      shopName: getValue("shopName"),
+      zip: getValue("zip"),
+      address: getValue("address"),
+      telNumber: getValue("telNumber"),
+      deliveryTime: getCheckedValue("deliveryTime"),
+      leaveAtDoor: getCheckedValue("leaveAtDoor"),
+      billingName: getValue("billingName"),
+      remarks: getValue("remarks"),
 
-        if (typeof liff !== "undefined" && liff.isLoggedIn()) {
-            profile = await liff.getProfile();
-        }
+      mainImages: getPreparedImages(["mainImage1", "mainImage2", "mainImage3"]),
+      neckLabelImages: getPreparedImages(["neckLabelImage1", "neckLabelImage2", "neckLabelImage3"]),
+      keyChainImages: getPreparedImages(["keyChainImage1", "keyChainImage2", "keyChainImage3"])
+    };
 
-        const payload = {
-            displayName: profile ? profile.displayName : "",
-            userId: profile ? profile.userId : "",
+    await fetch(gasUrl, {
+      method: "POST",
+      mode: "no-cors",
+      body: JSON.stringify(payload)
+    });
 
-            designRequest: designRequest,
-            contents: contents,
-            capOption: capOption,
-            ledOption: ledOption,
-            shopName: shopName,
-            zip: zip,
-            address: address,
-            telNumber: telNumber,
-            deliveryTime: deliveryTime,
-            leaveAtDoor: leaveAtDoor,
-            billingName: billingName,
-            remarks: remarks,
+    sendBtn.innerText = "送信完了！";
+    result.innerHTML = "✅ 送信完了！";
 
-            mainImages: await getImageFiles(["mainImage1", "mainImage2", "mainImage3"]),
-            neckLabelImages: await getImageFiles(["neckLabelImage1", "neckLabelImage2", "neckLabelImage3"]),
-            keyChainImages: await getImageFiles(["keyChainImage1", "keyChainImage2", "keyChainImage3"])
-        };
+  } catch (error) {
+    console.error(error);
 
-        await fetch(gasUrl, {
-            method: "POST",
-            mode: "no-cors",
-            body: JSON.stringify(payload)
-        });
-
-        button.innerText = "送信完了！";
-        result.innerHTML = "✅ 送信完了！";
-
-    } catch (error) {
-        console.error(error);
-
-        button.disabled = false;
-        button.innerText = "送信";
-        result.innerHTML = "送信失敗：" + error.message;
-    }
+    sendBtn.disabled = false;
+    sendBtn.innerText = "送信";
+    result.innerHTML = "送信失敗：" + error.message;
+  }
 }
 
 function addPreview(inputId, previewId, buttonId) {
-    document.getElementById(inputId).addEventListener("change", function () {
-        previewImage(inputId, previewId, buttonId);
-    });
+  document.getElementById(inputId).addEventListener("change", async function () {
+    await prepareImage(inputId, previewId, buttonId);
+  });
 }
 
-function previewImage(inputId, previewId, buttonId) {
-    const file = document.getElementById(inputId).files[0];
+async function prepareImage(inputId, previewId, buttonId) {
+  const input = document.getElementById(inputId);
+  const file = input.files[0];
 
-    if (!file) {
-        return;
-    }
+  imageData[inputId] = null;
 
-    const reader = new FileReader();
+  if (!file) return;
 
-    reader.onload = function (e) {
-        const img = document.getElementById(previewId);
+  processingCount++;
+  updateSendButton();
 
-        img.src = e.target.result;
-        img.style.display = "block";
+  try {
+    const base64 = await fileToBase64(file);
 
-        const button = document.getElementById(buttonId);
-
-        if (button) {
-            button.style.display = "inline-block";
-        }
-
-        const fileName = document.getElementById(getFileNameId(inputId));
-
-        if (fileName) {
-            fileName.textContent = file.name;
-        }
+    imageData[inputId] = {
+      inputId,
+      fileName: file.name,
+      mimeType: file.type,
+      imageBase64: base64
     };
 
-    reader.readAsDataURL(file);
+    const img = document.getElementById(previewId);
+    img.src = base64;
+    img.style.display = "block";
+
+    const button = document.getElementById(buttonId);
+    if (button) button.style.display = "inline-block";
+
+    const fileName = document.getElementById(getFileNameId(inputId));
+    if (fileName) fileName.textContent = file.name;
+
+  } catch (error) {
+    console.error(error);
+    alert("画像の読み込みに失敗しました");
+
+    input.value = "";
+    imageData[inputId] = null;
+
+  } finally {
+    processingCount--;
+    updateSendButton();
+  }
 }
 
 function removeImage(inputId, previewId, buttonId) {
-    document.getElementById(inputId).value = "";
+  document.getElementById(inputId).value = "";
+  imageData[inputId] = null;
 
-    const img = document.getElementById(previewId);
+  const img = document.getElementById(previewId);
+  if (img) {
+    img.src = "";
+    img.style.display = "none";
+  }
 
-    if (img) {
-        img.src = "";
-        img.style.display = "none";
-    }
+  const button = document.getElementById(buttonId);
+  if (button) button.style.display = "none";
 
-    const button = document.getElementById(buttonId);
+  const fileName = document.getElementById(getFileNameId(inputId));
+  if (fileName) fileName.textContent = "選択されていません";
+}
 
-    if (button) {
-        button.style.display = "none";
-    }
+function getPreparedImages(inputIds) {
+  return inputIds
+    .map(id => imageData[id])
+    .filter(Boolean);
+}
 
-    const fileName = document.getElementById(getFileNameId(inputId));
+function updateSendButton() {
+  if (processingCount > 0) {
+    sendBtn.disabled = true;
+    sendBtn.innerText = "画像を準備中...";
+  } else {
+    sendBtn.disabled = false;
+    sendBtn.innerText = "送信";
+  }
+}
 
-    if (fileName) {
-        fileName.textContent = "選択されていません";
-    }
+function getValue(id) {
+  return document.getElementById(id).value;
+}
+
+function getCheckedValue(name) {
+  const checked = document.querySelector(`input[name="${name}"]:checked`);
+  return checked ? checked.value : "";
 }
 
 function getFileNameId(inputId) {
-    return "fileName" + inputId.charAt(0).toUpperCase() + inputId.slice(1);
-}
-
-async function getImageFiles(inputIds) {
-    const images = [];
-
-    for (const inputId of inputIds) {
-        const file = document.getElementById(inputId).files[0];
-
-        if (file) {
-            images.push({
-                inputId: inputId,
-                fileName: file.name,
-                mimeType: file.type,
-                imageBase64: await fileToBase64(file)
-            });
-        }
-    }
-
-    return images;
+  return "fileName" + inputId.charAt(0).toUpperCase() + inputId.slice(1);
 }
 
 function fileToBase64(file) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
 
-        reader.onload = function () {
-            resolve(reader.result);
-        };
+    reader.onload = function () {
+      resolve(reader.result);
+    };
 
-        reader.onerror = function () {
-            reject(new Error("画像読み込み失敗"));
-        };
+    reader.onerror = function () {
+      reject(new Error("画像読み込み失敗"));
+    };
 
-        reader.readAsDataURL(file);
-    });
+    reader.readAsDataURL(file);
+  });
 }
 
 function validateRequiredFields() {
-    const requiredLabels = document.querySelectorAll("label.required");
-    const errors = [];
+  const requiredLabels = document.querySelectorAll("label.required");
+  const errors = [];
 
-    // メイン画像は1枚以上必須
-    const hasMainImage =
-        document.getElementById("mainImage1").files.length ||
-        document.getElementById("mainImage2").files.length ||
-        document.getElementById("mainImage3").files.length;
+  const hasMainImage =
+    imageData.mainImage1 ||
+    imageData.mainImage2 ||
+    imageData.mainImage3;
 
-    if (!hasMainImage) {
-        errors.push("メイン画像");
+  if (!hasMainImage) {
+    errors.push("メイン画像");
+  }
+
+  for (const label of requiredLabels) {
+    const inputId = label.getAttribute("for");
+    if (!inputId) continue;
+
+    const input = document.getElementById(inputId);
+    if (!input) continue;
+
+    if (!input.value.trim()) {
+      errors.push(label.textContent);
     }
+  }
 
-    for (const label of requiredLabels) {
-        const inputId = label.getAttribute("for");
+  if (errors.length > 0) {
+    alert("以下の項目を入力してください。\n\n" + errors.join("\n"));
+    return false;
+  }
 
-        if (!inputId) {
-            continue;
-        }
-
-        const input = document.getElementById(inputId);
-
-        if (!input) {
-            continue;
-        }
-
-        if (!input.value.trim()) {
-            errors.push(label.textContent);
-        }
-    }
-
-    if (errors.length > 0) {
-        alert("以下の項目を入力してください。\n\n" + errors.join("\n"));
-        return false;
-    }
-
-    return true;
+  return true;
 }
