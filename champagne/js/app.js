@@ -1,7 +1,9 @@
 const liffId = "2010495117-Yc1KZJ4o";
 const gasUrl = "https://script.google.com/macros/s/AKfycbyiMoulKLMG9MTisDZC8jdfQ6KeQwS6ia7R80YZxMHrXoSLC_-zrmL5urpkeWchoezF/exec";
 
-const imageData = {
+const tempOrderId = "TEMP_" + Date.now() + "_" + Math.random().toString(36).slice(2);
+
+const uploadState = {
   mainImage1: null,
   mainImage2: null,
   mainImage3: null,
@@ -13,24 +15,24 @@ const imageData = {
   keyChainImage3: null
 };
 
-let processingCount = 0;
+let uploadCount = 0;
 
 const sendBtn = document.getElementById("sendBtn");
 const result = document.getElementById("result");
 
 sendBtn.addEventListener("click", send);
 
-addPreview("mainImage1", "previewMainImage1", "removeMainImage1");
-addPreview("mainImage2", "previewMainImage2", "removeMainImage2");
-addPreview("mainImage3", "previewMainImage3", "removeMainImage3");
+addPreview("mainImage1", "previewMainImage1", "removeMainImage1", "main");
+addPreview("mainImage2", "previewMainImage2", "removeMainImage2", "main");
+addPreview("mainImage3", "previewMainImage3", "removeMainImage3", "main");
 
-addPreview("neckLabelImage1", "previewNeckLabelImage1", "removeNeckLabelImage1");
-addPreview("neckLabelImage2", "previewNeckLabelImage2", "removeNeckLabelImage2");
-addPreview("neckLabelImage3", "previewNeckLabelImage3", "removeNeckLabelImage3");
+addPreview("neckLabelImage1", "previewNeckLabelImage1", "removeNeckLabelImage1", "neckLabel");
+addPreview("neckLabelImage2", "previewNeckLabelImage2", "removeNeckLabelImage2", "neckLabel");
+addPreview("neckLabelImage3", "previewNeckLabelImage3", "removeNeckLabelImage3", "neckLabel");
 
-addPreview("keyChainImage1", "previewKeyChainImage1", "removeKeyChainImage1");
-addPreview("keyChainImage2", "previewKeyChainImage2", "removeKeyChainImage2");
-addPreview("keyChainImage3", "previewKeyChainImage3", "removeKeyChainImage3");
+addPreview("keyChainImage1", "previewKeyChainImage1", "removeKeyChainImage1", "keyChain");
+addPreview("keyChainImage2", "previewKeyChainImage2", "removeKeyChainImage2", "keyChain");
+addPreview("keyChainImage3", "previewKeyChainImage3", "removeKeyChainImage3", "keyChain");
 
 async function initLiff() {
   if (typeof liff !== "undefined") {
@@ -43,8 +45,8 @@ initLiff();
 async function send() {
   if (!validateRequiredFields()) return;
 
-  if (processingCount > 0) {
-    alert("画像を準備中です。少し待ってから送信してください。");
+  if (uploadCount > 0) {
+    alert("画像をアップロード中です。少し待ってから送信してください。");
     return;
   }
 
@@ -60,6 +62,9 @@ async function send() {
     }
 
     const payload = {
+      action: "submitOrder",
+      tempOrderId,
+
       displayName: profile ? profile.displayName : "",
       userId: profile ? profile.userId : "",
 
@@ -74,11 +79,7 @@ async function send() {
       deliveryTime: getCheckedValue("deliveryTime"),
       leaveAtDoor: getCheckedValue("leaveAtDoor"),
       billingName: getValue("billingName"),
-      remarks: getValue("remarks"),
-
-      mainImages: getPreparedImages(["mainImage1", "mainImage2", "mainImage3"]),
-      neckLabelImages: getPreparedImages(["neckLabelImage1", "neckLabelImage2", "neckLabelImage3"]),
-      keyChainImages: getPreparedImages(["keyChainImage1", "keyChainImage2", "keyChainImage3"])
+      remarks: getValue("remarks")
     };
 
     await fetch(gasUrl, {
@@ -99,61 +100,86 @@ async function send() {
   }
 }
 
-function addPreview(inputId, previewId, buttonId) {
+function addPreview(inputId, previewId, buttonId, imageType) {
   document.getElementById(inputId).addEventListener("change", async function () {
-    await prepareImage(inputId, previewId, buttonId);
+    await prepareAndUploadImage(inputId, previewId, buttonId, imageType);
   });
 }
 
-async function prepareImage(inputId, previewId, buttonId) {
+async function prepareAndUploadImage(inputId, previewId, buttonId, imageType) {
   const input = document.getElementById(inputId);
   const file = input.files[0];
 
-  imageData[inputId] = null;
+  uploadState[inputId] = null;
 
   if (!file) return;
 
-  processingCount++;
+  uploadCount++;
   updateSendButton();
 
   try {
     const base64 = await fileToBase64(file);
 
-    imageData[inputId] = {
+    showPreview(inputId, previewId, buttonId, base64, file.name);
+
+    const payload = {
+      action: "uploadImage",
+      tempOrderId,
+      imageType,
       inputId,
       fileName: file.name,
       mimeType: file.type,
       imageBase64: base64
     };
 
-    const img = document.getElementById(previewId);
-    img.src = base64;
-    img.style.display = "block";
+    await fetch(gasUrl, {
+      method: "POST",
+      mode: "no-cors",
+      body: JSON.stringify(payload)
+    });
 
-    const button = document.getElementById(buttonId);
-    if (button) button.style.display = "inline-block";
-
-    const fileName = document.getElementById(getFileNameId(inputId));
-    if (fileName) fileName.textContent = file.name;
+    uploadState[inputId] = {
+      uploaded: true,
+      imageType,
+      inputId,
+      fileName: file.name
+    };
 
   } catch (error) {
     console.error(error);
-    alert("画像の読み込みに失敗しました");
+    alert("画像アップロードに失敗しました");
 
     input.value = "";
-    imageData[inputId] = null;
+    uploadState[inputId] = null;
+    clearPreview(inputId, previewId, buttonId);
 
   } finally {
-    processingCount--;
+    uploadCount--;
     updateSendButton();
   }
 }
 
+function showPreview(inputId, previewId, buttonId, base64, fileNameText) {
+  const img = document.getElementById(previewId);
+  img.src = base64;
+  img.style.display = "block";
+
+  const button = document.getElementById(buttonId);
+  if (button) button.style.display = "inline-block";
+
+  const fileName = document.getElementById(getFileNameId(inputId));
+  if (fileName) fileName.textContent = fileNameText;
+}
+
 function removeImage(inputId, previewId, buttonId) {
   document.getElementById(inputId).value = "";
-  imageData[inputId] = null;
+  uploadState[inputId] = null;
+  clearPreview(inputId, previewId, buttonId);
+}
 
+function clearPreview(inputId, previewId, buttonId) {
   const img = document.getElementById(previewId);
+
   if (img) {
     img.src = "";
     img.style.display = "none";
@@ -166,16 +192,10 @@ function removeImage(inputId, previewId, buttonId) {
   if (fileName) fileName.textContent = "選択されていません";
 }
 
-function getPreparedImages(inputIds) {
-  return inputIds
-    .map(id => imageData[id])
-    .filter(Boolean);
-}
-
 function updateSendButton() {
-  if (processingCount > 0) {
+  if (uploadCount > 0) {
     sendBtn.disabled = true;
-    sendBtn.innerText = "画像を準備中...";
+    sendBtn.innerText = "画像アップロード中...";
   } else {
     sendBtn.disabled = false;
     sendBtn.innerText = "送信";
@@ -216,9 +236,9 @@ function validateRequiredFields() {
   const errors = [];
 
   const hasMainImage =
-    imageData.mainImage1 ||
-    imageData.mainImage2 ||
-    imageData.mainImage3;
+    uploadState.mainImage1 ||
+    uploadState.mainImage2 ||
+    uploadState.mainImage3;
 
   if (!hasMainImage) {
     errors.push("メイン画像");
