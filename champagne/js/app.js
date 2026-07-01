@@ -64,7 +64,7 @@ async function send() {
 
   sendBtn.disabled = true;
   sendBtn.innerText = "送信中...";
-  result.innerHTML = "少々お待ちください";
+  result.innerHTML = "画面を閉じないでください！";
 
   try {
     let profile = null;
