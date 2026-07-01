@@ -80,17 +80,19 @@ async function send() {
       displayName: profile ? profile.displayName : "",
       userId: profile ? profile.userId : "",
 
+      customText: getValue("customText"),
       designRequest: getValue("designRequest"),
       contents: getValue("contents"),
       capOption: getValue("capOption"),
       ledOption: getValue("ledOption"),
+      deliveryDate: getValue("deliveryDate"),
+      billingName: getValue("billingName"),
       shopName: getValue("shopName"),
       zip: getValue("zip"),
       address: getValue("address"),
       telNumber: getValue("telNumber"),
       deliveryTime: getCheckedValue("deliveryTime"),
       leaveAtDoor: getCheckedValue("leaveAtDoor"),
-      billingName: getValue("billingName"),
       remarks: getValue("remarks")
     };
 
