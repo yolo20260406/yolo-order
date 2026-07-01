@@ -53,15 +53,18 @@
                 <img id="previewMainImage3">
             </div>
 
+            <label for="customText">入れたいテキスト</label>
+            <input id="customText" type="text" placeholder="例：HAPPY BIRTHDAY" autocomplete="organization">
+
             <label for="designRequest" class="required">デザインイメージ</label>
-            <textarea id="designRequest" placeholder="デザインの要望"></textarea>
+            <textarea id="designRequest" placeholder="※画像がデザインになっている場合は「そのまま使用」とご記入ください！&#10;※その他背景色のイメージ等ありましたらご記入ください！"></textarea>
 
             <label for="contents" class="required">中身、本数</label>
             <textarea id="contents" placeholder="〇を□本など"></textarea>
 
             <div class="option-title">▼ オプション項目</div>
 
-            <label>ネックシール画像</label>
+            <label>ネックシール画像（+500円）</label>
 
             <div class="preview-wrapper">
                 <div class="file-row">
@@ -96,7 +99,7 @@
                 <img id="previewNeckLabelImage3">
             </div>
 
-            <label>キーホルダー画像</label>
+            <label>キーホルダー画像（+500円）</label>
 
             <div class="preview-wrapper">
                 <div class="file-row">
@@ -131,11 +134,20 @@
                 <img id="previewKeyChainImage3">
             </div>
 
-            <label for="capOption">キャップ変更</label>
+            <label for="capOption">キャップ変更（+500円）</label>
             <textarea id="capOption" placeholder="ブラック、ピンクなど"></textarea>
 
-            <label for="ledOption">LED</label>
+            <label for="ledOption">LED（+500円）</label>
             <textarea id="ledOption" placeholder="LED6本など"></textarea>
+
+
+            <div class="option-title">▼ お見積り情報</div>
+
+            <label for="billingName" class="required">お見積り・請求書名義</label>
+            <input id="billingName" type="text" placeholder="例：株式会社○○" autocomplete="organization">
+
+            <label for="deliveryDate" class="required">希望納期</label>
+            <input id="deliveryDate" type="text" placeholder="例：〇/〇日までに欲しい">
 
             <div class="option-title">▼ お届け先</div>
 
@@ -168,9 +180,6 @@
                 <label><input type="radio" name="leaveAtDoor" value="希望する">希望する</label>
                 <label><input type="radio" name="leaveAtDoor" value="希望しない" checked>希望しない</label>
             </div>
-
-            <label for="billingName">請求書名義</label>
-            <input id="billingName" type="text" placeholder="例：株式会社○○" autocomplete="organization">
 
             <label for="remarks">その他備考</label>
             <textarea id="remarks" placeholder="その他ご要望がございましたらご記入ください"></textarea>
