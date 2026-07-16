@@ -191,3 +191,11 @@ textarea {
     border-left:4px solid #06C755;
     border-radius:6px;
 }
+.option-image {
+  width: 100%;
+  max-width: 420px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  border-radius: 12px;
+}
